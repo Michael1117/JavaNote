@@ -133,6 +133,64 @@ public class DruidDemo {
 
    ​     	1 .   获取连接方法： 通过数据库连接池获取连接
 
-   ​		 2.   释放资源
+   ​         2.   释放资源
 
-   ​		 3.    获取连接池的方法	
+   ​         3.  获取连接池的方法
+
+   >
+   >
+   >
+   >
+   >
+
+   
+
+   
+
+   ### Spring JDBC
+
+   Spring框架对JDBC的简答封装。提供了一个JDBCTemplate对象简化JDBC的开发
+
+   JdbcTemplateDemo1.java
+
+   ```java
+   package com.hefeng.datasource.jdbctemplate;
+   
+   import com.hefeng.datasource.utils.JDBCUtils;
+   import org.springframework.jdbc.core.JdbcTemplate;
+   
+   /**
+    * jdbcTemplate入门
+    */
+   public class JdbcTemplateDemo1 {
+       public static void main(String[] args) {
+           // 1. 导入jar包
+   
+           // 2. 创建JDBCTemplate对象
+           JdbcTemplate template = new JdbcTemplate(JDBCUtils.getDataSource());
+           // 3. 调用方法
+           String sql = "update account set money = 5000 where id = ?";
+           int count = template.update(sql, 5);
+   
+           System.out.println(count);
+   
+   
+       }
+   }
+   ```
+
+   
+
+   
+
+   
+
+增删改： DML语句 (insert, delete,update)
+
+查： DQL语句 (select)
+
+
+
+最终目录结构
+
+![1557051231289](C:\Users\michaelhee\AppData\Roaming\Typora\typora-user-images\1557051231289.png)
