@@ -354,3 +354,177 @@ application.properties和application.yaml都存在的情况下，取并集。
 目录结构
 
 ![1557227408139](C:\Users\michaelhee\AppData\Roaming\Typora\typora-user-images\1557227408139.png)
+
+@SpringBootApplication
+
+1.声明一个配置类
+
+```java
+package org.springframework.boot;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * Indicates that a class provides Spring Boot application
+ * {@link Configuration @Configuration}. Can be used as an alternative to the Spring's
+ * standard {@code @Configuration} annotation so that configuration can be found
+ * automatically (for example in tests).
+ * <p>
+ * Application should only ever include <em>one</em> {@code @SpringBootConfiguration} and
+ * most idiomatic Spring Boot applications will inherit it from
+ * {@code @SpringBootApplication}.
+ *
+ * @author Phillip Webb
+ * @since 1.4.0
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Configuration
+public @interface SpringBootConfiguration {
+
+}
+
+```
+
+2.开启自动配置  
+
+For example, if you have {@code tomcat-embedded.jar} on your classpath you are likely to want a
+{@link TomcatServletWebServerFactory} (unless you have defined your own {@link ServletWebServerFactory} bean).
+
+```java
+/**
+ * Enable auto-configuration of the Spring Application Context, attempting to guess and
+ * configure beans that you are likely to need. Auto-configuration classes are usually
+ * applied based on your classpath and what beans you have defined. For example, if you
+ * have {@code tomcat-embedded.jar} on your classpath you are likely to want a
+ * {@link TomcatServletWebServerFactory} (unless you have defined your own
+ * {@link ServletWebServerFactory} bean).
+ * <p>
+ * When using {@link SpringBootApplication}, the auto-configuration of the context is
+ * automatically enabled and adding this annotation has therefore no additional effect.
+ * <p>
+ * Auto-configuration tries to be as intelligent as possible and will back-away as you
+ * define more of your own configuration. You can always manually {@link #exclude()} any
+ * configuration that you never want to apply (use {@link #excludeName()} if you don't
+ * have access to them). You can also exclude them via the
+ * {@code spring.autoconfigure.exclude} property. Auto-configuration is always applied
+ * after user-defined beans have been registered.
+ * <p>
+ * The package of the class that is annotated with {@code @EnableAutoConfiguration},
+ * usually via {@code @SpringBootApplication}, has specific significance and is often used
+ * as a 'default'. For example, it will be used when scanning for {@code @Entity} classes.
+ * It is generally recommended that you place {@code @EnableAutoConfiguration} (if you're
+ * not using {@code @SpringBootApplication}) in a root package so that all sub-packages
+ * and classes can be searched.
+ * <p>
+ * Auto-configuration classes are regular Spring {@link Configuration} beans. They are
+ * located using the {@link SpringFactoriesLoader} mechanism (keyed against this class).
+ * Generally auto-configuration beans are {@link Conditional @Conditional} beans (most
+ * often using {@link ConditionalOnClass @ConditionalOnClass} and
+ * {@link ConditionalOnMissingBean @ConditionalOnMissingBean} annotations).
+ */
+```
+
+3.扫描包 : 如果没有指定包，扫描将会从声明了注解的包开始,也就是@SpringBootApplication 开始
+
+```java
+* <p>Either {@link #basePackageClasses} or {@link #basePackages} (or its alias
+* {@link #value}) may be specified to define specific packages to scan. If specific
+* packages are not defined, scanning will occur from the package of the
+* class that declares this annotation.
+```
+
+![1557229426729](C:\Users\michaelhee\AppData\Roaming\Typora\typora-user-images\1557229426729.png)
+
+BootDemoApplication.java在com目录下，config和web包都在com下，所以都在扫描范围之内。
+
+也可以用@ComponentScan()来配置。
+
+
+
+@Configration和@SpringBootApplication的作用基本相同，@SpringBootApplication表示是springboot的注解
+
+
+
+```java
+package com.hefeng;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class BootDemoApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(BootDemoApplication.class, args);
+    }
+}
+```
+
+run->run->SpringApplication
+
+```java
+public static final String DEFAULT_REACTIVE_WEB_CONTEXT_CLASS = "org.springframework."
+      + "boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext";
+
+private static final String REACTIVE_WEB_ENVIRONMENT_CLASS = "org.springframework."
+      + "web.reactive.DispatcherHandler";
+
+private static final String MVC_WEB_ENVIRONMENT_CLASS = "org.springframework."
+      + "web.servlet.DispatcherServlet";
+
+private static final String JERSEY_WEB_ENVIRONMENT_CLASS = "org.glassfish.jersey.server.ResourceConfig";
+```
+
+```java
+public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+   this.resourceLoader = resourceLoader;
+   Assert.notNull(primarySources, "PrimarySources must not be null");
+   this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
+   this.webApplicationType = deduceWebApplicationType();
+   setInitializers((Collection) getSpringFactoriesInstances(
+         ApplicationContextInitializer.class));
+   setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+   this.mainApplicationClass = deduceMainApplicationClass();
+}
+
+private WebApplicationType deduceWebApplicationType() {
+   if (ClassUtils.isPresent(REACTIVE_WEB_ENVIRONMENT_CLASS, null)
+         && !ClassUtils.isPresent(MVC_WEB_ENVIRONMENT_CLASS, null)
+         && !ClassUtils.isPresent(JERSEY_WEB_ENVIRONMENT_CLASS, null)) {
+      return WebApplicationType.REACTIVE;
+   }
+   for (String className : WEB_ENVIRONMENT_CLASSES) {
+      if (!ClassUtils.isPresent(className, null)) {
+         return WebApplicationType.NONE;
+      }
+   }
+   return WebApplicationType.SERVLET;
+}
+```
+
+org.springframework.boot:spring-boot-autoconfigure:2.0.4.RELEASE/org...autoconfigure
+
+
+
+aop
+
+cache
+
+dao
+
+data
+
+web
+
+web/servlet/WebMvcAutoConfiguration
+
+
+
+AbstractRibbonCommand.class搜索ReadTimeout
