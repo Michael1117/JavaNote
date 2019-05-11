@@ -362,3 +362,11 @@ public interface IUserDao {
     List<User> findAll();
 }
 ```
+
+```xml
+ <!--根据名称模糊查询用户-->
+    <select id="findByName" parameterType="string" resultType="com.shoo.domain.User">
+    	select * from user where username like #{name};   // 带有预处理
+        select * from user where username like '%${value}%' // 没有预处理
+    </select>
+```
