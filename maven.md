@@ -185,3 +185,8 @@ scope: provided:  servlet-api,jsp-api
 scope: runtime: JDBC驱动
 
 scope: test :  Junit
+
+
+
+tomcat7:run
+
